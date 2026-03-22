@@ -1,0 +1,6 @@
+ID;orderNumber;customerName;amount;currency;orderDate;region;status
+192b0c34-eb17-4861-a590-7cb5752c0cd1;SO-1001;Acme Corp;15000.00;USD;2023-10-01;North America;Completed
+b437e408-fa96-419b-a316-27a3c3b0df32;SO-1002;Global Tech;25000.00;USD;2023-10-05;North America;Pending
+c9431e61-a02b-4b13-a4f6-829d592b23a5;SO-1003;Euro Industries;18500.00;EUR;2023-10-15;Europe;Completed
+2c0ab435-ff6e-44ca-bf95-9f939e6a0d2f;SO-1004;Asia Widgets;32000.00;USD;2023-11-02;Asia Pacific;Completed
+e17cb58c-baee-4f47-a8e5-33924f22497d;SO-1005;Acme Corp;8000.00;USD;2023-11-12;North America;Cancelled

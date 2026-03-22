@@ -1,0 +1,32 @@
+{
+  "name": "sap-copilot",
+  "version": "1.0.0",
+  "description": "SAP Copilot: Enterprise Knowledge & Action AI",
+  "repository": "<Add your repository here>",
+  "license": "UNLICENSED",
+  "private": true,
+  "dependencies": {
+    "@google/genai": "^1.46.0",
+    "@sap/cds": "^7",
+    "dotenv": "^17.3.1",
+    "express": "^4"
+  },
+  "devDependencies": {
+    "@cap-js/sqlite": "^1",
+    "@ui5/cli": "^4.0.49",
+    "mbt": "^1.2.45"
+  },
+  "scripts": {
+    "start": "cds-serve"
+  },
+  "cds": {
+    "requires": {
+      "db": {
+        "kind": "sqlite",
+        "credentials": {
+          "url": "db.sqlite"
+        }
+      }
+    }
+  }
+}

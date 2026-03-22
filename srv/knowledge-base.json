@@ -1,0 +1,52 @@
+[
+  {
+    "process": "Create Sales Order",
+    "description": "A sales order is created to record a customer's request for goods or services.",
+    "steps": [
+      "1. Enter Order Type (e.g., OR for Standard Order).",
+      "2. Enter Sales Organization, Distribution Channel, and Division.",
+      "3. Enter Sold-to Party and Ship-to Party.",
+      "4. Enter Customer Reference and Date.",
+      "5. Enter Material Number and Order Quantity.",
+      "6. Save the order to generate a Sales Order Number."
+    ],
+    "tcode": "VA01"
+  },
+  {
+    "process": "Create Purchase Order",
+    "description": "A purchase order is an official document sent to a vendor to authorize a purchase.",
+    "steps": [
+      "1. Select Vendor.",
+      "2. Enter Purchasing Organization, Purchasing Group, and Company Code.",
+      "3. Enter Material Number, PO Quantity, Delivery Date, and Net Price.",
+      "4. Enter Plant and Storage Location.",
+      "5. Save the document."
+    ],
+    "tcode": "ME21N"
+  },
+  {
+    "process": "Create Material Master",
+    "description": "Defines how a product is sold, manufactured, purchased, inventoried, and costed.",
+    "steps": [
+      "1. Enter Material Number, Industry Sector, and Material Type.",
+      "2. Select required views (e.g., Basic Data, Sales, Purchasing).",
+      "3. Enter Plant and Storage Location.",
+      "4. Fill in Base Unit of Measure, Description, and Weight.",
+      "5. Save."
+    ],
+    "tcode": "MM01"
+  },
+  {
+    "process": "Post G/L Account Document",
+    "description": "Used to manually enter a journal entry into the General Ledger.",
+    "steps": [
+      "1. Enter Document Date and Posting Date.",
+      "2. Enter Company Code and Currency.",
+      "3. Enter first line item: G/L Account, Debit/Credit, Amount.",
+      "4. Enter offset line item.",
+      "5. Simulate to check balance (must be zero).",
+      "6. Post."
+    ],
+    "tcode": "FB50"
+  }
+]

@@ -1,0 +1,89 @@
+<mvc:View
+    controllerName="sap.copilot.controller.App"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns="sap.m"
+    xmlns:tnt="sap.tnt"
+    xmlns:u="sap.ui.unified"
+    displayBlock="true">
+    <tnt:ToolPage id="toolPage">
+        <tnt:header>
+            <tnt:ToolHeader>
+                <Title text="SAP Copilot: Enterprise AI" />
+                <ToolbarSpacer />
+                <Select id="roleSelect" change="onRoleChange">
+                    <core:Item xmlns:core="sap.ui.core" key="intern" text="Intern" />
+                    <core:Item xmlns:core="sap.ui.core" key="manager" text="Manager" />
+                    <core:Item xmlns:core="sap.ui.core" key="developer" text="Developer" />
+                </Select>
+            </tnt:ToolHeader>
+        </tnt:header>
+        <tnt:sideContent>
+            <tnt:SideNavigation>
+                <tnt:NavigationList itemSelect="onItemSelect">
+                    <tnt:NavigationListItem text="Process Assistant" icon="sap-icon://sys-help" key="processPage"/>
+                    <tnt:NavigationListItem text="Data Insights" icon="sap-icon://bar-chart" key="insightsPage"/>
+                    <tnt:NavigationListItem text="Document Brain" icon="sap-icon://document" key="docsPage"/>
+                    <tnt:NavigationListItem text="Action Agent" icon="sap-icon://action" key="agentPage"/>
+                </tnt:NavigationList>
+            </tnt:SideNavigation>
+        </tnt:sideContent>
+        <tnt:mainContents>
+            <NavContainer id="pageContainer">
+                <Page id="processPage" showHeader="false">
+                    <VBox class="sapUiMediumMargin">
+                        <Title text="Ask the Process Assistant" level="H2" class="sapUiTinyMarginBottom" />
+                        <TextArea id="questionInput" width="100%" rows="4" placeholder="e.g. How to create a sales order?" />
+                        <Button text="Ask" press="onAskPress" type="Emphasized" class="sapUiTinyMarginTop"/>
+                        
+                        <Panel headerText="Response" class="sapUiSmallMarginTop">
+                            <Text id="responseText" text="Your answer will appear here..." />
+                        </Panel>
+                    </VBox>
+                </Page>
+                <Page id="insightsPage" showHeader="false">
+                    <VBox class="sapUiMediumMargin">
+                        <Title text="Data Insight AI" level="H2" class="sapUiTinyMarginBottom" />
+                        <Text text="Ask questions about recent sales data (mocked from HANA)." class="sapUiSmallMarginBottom"/>
+                        <TextArea id="insightInput" width="100%" rows="2" placeholder="e.g. Why are sales low this month? Which region performed best?" />
+                        <Button text="Analyze Data" press="onAnalyzePress" type="Emphasized" class="sapUiTinyMarginTop"/>
+                        
+                        <Panel headerText="AI Insights" class="sapUiSmallMarginTop">
+                            <Text id="insightResponse" text="Analysis will appear here..." />
+                        </Panel>
+                    </VBox>
+                </Page>
+                <Page id="docsPage" showHeader="false">
+                    <VBox class="sapUiMediumMargin">
+                        <Title text="Document Brain (RAG)" level="H2" class="sapUiTinyMarginBottom" />
+                        <Text text="Upload SOPs or manuals as PDFs, then ask questions about them." class="sapUiSmallMarginBottom"/>
+                        
+                        <HBox alignItems="Center" class="sapUiSmallMarginBottom">
+                            <u:FileUploader id="fileUploader" name="file" uploadUrl="/api/uploadPdf" sendXHR="true" placeholder="Choose a PDF file..." fileType="pdf" />
+                            <Button text="Upload PDF" press="onUploadPress" class="sapUiTinyMarginBegin" type="Accept"/>
+                        </HBox>
+
+                        <TextArea id="docQuestionInput" width="100%" rows="3" placeholder="e.g. What is the refund policy according to the SOP?" />
+                        <Button text="Ask Document" press="onQueryDocPress" type="Emphasized" class="sapUiTinyMarginTop"/>
+
+                        <Panel headerText="AI Response with Sources" class="sapUiSmallMarginTop">
+                            <Text id="docResponseText" text="Answer based on documents will appear here..." />
+                        </Panel>
+                    </VBox>
+                </Page>
+                <Page id="agentPage" showHeader="false">
+                    <VBox class="sapUiMediumMargin">
+                        <Title text="Action Agent" level="H2" class="sapUiTinyMarginBottom" />
+                        <Text text="Give the agent a complex multi-step task like: 'Fetch sales data, generate a report, and draft an email to the team.'" class="sapUiSmallMarginBottom"/>
+                        
+                        <TextArea id="agentInput" width="100%" rows="3" placeholder="e.g. Create last month's sales report and draft an email." />
+                        <Button text="Execute" press="onExecuteAgentPress" type="Emphasized" class="sapUiTinyMarginTop"/>
+
+                        <Panel headerText="Agent Execution Logs and Result" class="sapUiSmallMarginTop">
+                            <Text id="agentResponseText" text="Agent execution steps and final result will appear here..." />
+                        </Panel>
+                    </VBox>
+                </Page>
+            </NavContainer>
+        </tnt:mainContents>
+    </tnt:ToolPage>
+</mvc:View>
