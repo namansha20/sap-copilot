@@ -42,9 +42,9 @@ sap.ui.define([
 
             oResponseText.setText("Thinking...");
 
-            // Call CAP OData action
+            // Call Python REST API
             $.ajax({
-                url: "/odata/v4/copilot/ask",
+                url: "/api/ask",
                 method: "POST",
                 contentType: "application/json",
                 data: JSON.stringify({ question: sQuestion, role: sRole }),
@@ -72,7 +72,7 @@ sap.ui.define([
             oResponseText.setText("Analyzing Sales Data...");
 
             $.ajax({
-                url: "/odata/v4/copilot/analyzeData",
+                url: "/api/analyzeData",
                 method: "POST",
                 contentType: "application/json",
                 data: JSON.stringify({ question: sQuestion }),
@@ -120,7 +120,7 @@ sap.ui.define([
             oResponseText.setText("Querying Document Brain...");
 
             $.ajax({
-                url: "/odata/v4/copilot/queryDocument",
+                url: "/api/queryDocument",
                 method: "POST",
                 contentType: "application/json",
                 data: JSON.stringify({ question: sQuestion }),
@@ -148,7 +148,7 @@ sap.ui.define([
             oResponseText.setText("Agent is planning and executing steps... Please wait.");
 
             $.ajax({
-                url: "/odata/v4/copilot/executeAction",
+                url: "/api/executeAction",
                 method: "POST",
                 contentType: "application/json",
                 data: JSON.stringify({ prompt: sPrompt }),
