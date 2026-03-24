@@ -10,24 +10,14 @@ from dotenv import load_dotenv
 
 # LangChain Imports
 from langchain_google_genai import ChatGoogleGenerativeAI, GoogleGenerativeAIEmbeddings
-from langchain.prompts import PromptTemplate
-from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_community.vectorstores import FAISS
 from langchain_community.document_loaders import PyPDFLoader
-from langchain.agents import initialize_agent, AgentType, Tool
 import tempfile
 
 load_dotenv()
 
 app = FastAPI(title="SAP Copilot AI")
-
-# Mount UI5 static files
-# We serve index.html on the root, but the static files need /app
-app.mount("/app", StaticFiles(directory="app"), name="app")
-
-@app.get("/")
-def read_root():
-    return FileResponse("app/index.html")
 
 # Initialize LLM
 llm = ChatGoogleGenerativeAI(model="gemini-2.5-flash", temperature=0.2)
@@ -52,6 +42,17 @@ class ActionRequest(BaseModel):
     prompt: str
 
 # Endpoints
+@app.get("/api/getSalesData")
+async def get_sales_data():
+    try:
+        df = pd.read_csv("db/data/sap.copilot-SalesOrders.csv", sep=";")
+        if "amount" in df.columns:
+            df["amount"] = pd.to_numeric(df["amount"], errors="coerce").fillna(0)
+        records = df.head(20).to_dict(orient="records")
+        return records
+    except Exception as e:
+        return JSONResponse(content={"error": f"Failed to load sales data: {str(e)}"}, status_code=500)
+
 @app.post("/api/ask")
 async def ask_process(req: AskRequest):
     role_context = ""
@@ -66,8 +67,10 @@ async def ask_process(req: AskRequest):
         role_context = "Act as an experienced SAP Consultant."
 
     system_instruction = f"""You are an expert SAP Enterprise AI Assistant. 
-Your goal is to answer questions based on the provided Knowledge Base of SAP processes.
-Format your answer elegantly using Markdown. Include the explanation, the step-by-step process, and the relevant t-code.
+Your goal is to provide expert answers to the user's questions about SAP. 
+First, check the provided Knowledge Base of SAP processes. If the question relates to them, use the KB to structure your answer (including the explanation, step-by-step process, and relevant T-code). 
+If the question falls outside the Knowledge Base (e.g., questions about SAP BTP, CAP, UI5, Fiori, or general development), answer it comprehensively using your broad expert knowledge of the SAP ecosystem. Do not limit yourself strictly to the KB.
+Format your answer elegantly using Markdown.
 Role Persona: {role_context}
 
 ===== KNOWLEDGE BASE =====
@@ -175,30 +178,24 @@ async def execute_action(req: ActionRequest):
         def draft_email(input_str: str) -> str:
             return f"Subject: Weekly Sales Report Summary\n\nTeam,\nHere is the latest report:\n\n{input_str}\n\nBest,\nSAP Copilot"
 
-        tools = [
-            Tool(name="fetch_sales_data", func=fetch_sales_data, description="Fetches the latest sales data from the SAP mock database. Input should be 'all' or empty."),
-            Tool(name="generate_report", func=generate_report, description="Generates a textual sales report from raw JSON data. Input should be the raw JSON data."),
-            Tool(name="draft_email", func=draft_email, description="Drafts an email summarizing a report. Input should be the generated report text.")
-        ]
+        prompt_lower = req.prompt.lower()
+        run_email_step = "email" in prompt_lower or "mail" in prompt_lower
 
-        agent = initialize_agent(
-            tools=tools,
-            llm=llm,
-            agent=AgentType.ZERO_SHOT_REACT_DESCRIPTION,
-            verbose=True,
-            return_intermediate_steps=True
-        )
+        sales_data = fetch_sales_data("all")
+        report_text = generate_report(sales_data)
+        final_answer = draft_email(report_text) if run_email_step else report_text
 
-        result = agent.invoke({"input": req.prompt})
-        
-        # Build nice string showing steps
+        # Build a simple execution trace for the UI
         output = "### Agent Execution Logs ###\n"
-        if "intermediate_steps" in result and result["intermediate_steps"]:
-            for idx, step in enumerate(result["intermediate_steps"]):
-                action, observation = step
-                output += f"\n**Step {idx + 1}**\n*Tool called:* `{action.tool}`\n*Input:* {action.tool_input}\n*Observation:* {str(observation)[:150]}...\n"
-                
-        output += f"\n\n### Final Answer ###\n{result['output']}"
+        output += "\n**Step 1**\n*Tool called:* `fetch_sales_data`\n*Input:* all\n*Observation:* Retrieved latest sales rows.\n"
+        output += "\n**Step 2**\n*Tool called:* `generate_report`\n*Input:* sales JSON\n*Observation:* Built a summarized report.\n"
+        if run_email_step:
+            output += "\n**Step 3**\n*Tool called:* `draft_email`\n*Input:* generated report\n*Observation:* Created an email-ready summary.\n"
+
+        output += f"\n\n### Final Answer ###\n{final_answer}"
         return {"value": output}
     except Exception as e:
         return {"value": f"Agent Execute Failed: {str(e)}"}
+
+# Serve the UI5 app at the root URL
+app.mount("/", StaticFiles(directory="app", html=True), name="app")

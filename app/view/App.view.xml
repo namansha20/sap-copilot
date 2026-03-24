@@ -1,8 +1,9 @@
 <mvc:View
-    controllerName="sap.copilot.controller.App"
+    controllerName="sap.copilot.controller.Main"
     xmlns:mvc="sap.ui.core.mvc"
     xmlns="sap.m"
     xmlns:tnt="sap.tnt"
+    xmlns:core="sap.ui.core"
     xmlns:u="sap.ui.unified"
     displayBlock="true">
     <tnt:ToolPage id="toolPage">
@@ -18,12 +19,12 @@
             </tnt:ToolHeader>
         </tnt:header>
         <tnt:sideContent>
-            <tnt:SideNavigation>
-                <tnt:NavigationList itemSelect="onItemSelect">
-                    <tnt:NavigationListItem text="Process Assistant" icon="sap-icon://sys-help" key="processPage"/>
-                    <tnt:NavigationListItem text="Data Insights" icon="sap-icon://bar-chart" key="insightsPage"/>
-                    <tnt:NavigationListItem text="Document Brain" icon="sap-icon://document" key="docsPage"/>
-                    <tnt:NavigationListItem text="Action Agent" icon="sap-icon://action" key="agentPage"/>
+            <tnt:SideNavigation itemSelect="onItemSelect">
+                <tnt:NavigationList>
+                    <tnt:NavigationListItem id="navProcess" text="Process Assistant" icon="sap-icon://sys-help" key="processPage"/>
+                    <tnt:NavigationListItem id="navInsights" text="Data Insights" icon="sap-icon://bar-chart" key="insightsPage"/>
+                    <tnt:NavigationListItem id="navDocs" text="Document Brain" icon="sap-icon://document" key="docsPage"/>
+                    <tnt:NavigationListItem id="navAgent" text="Action Agent" icon="sap-icon://action" key="agentPage"/>
                 </tnt:NavigationList>
             </tnt:SideNavigation>
         </tnt:sideContent>
@@ -42,8 +43,21 @@
                 </Page>
                 <Page id="insightsPage" showHeader="false">
                     <VBox class="sapUiMediumMargin">
-                        <Title text="Data Insight AI" level="H2" class="sapUiTinyMarginBottom" />
-                        <Text text="Ask questions about recent sales data (mocked from HANA)." class="sapUiSmallMarginBottom"/>
+                        <Title text="Data Insight AI & Dashboard" level="H2" class="sapUiTinyMarginBottom" />
+                        <Text text="Ask questions about recent sales data, and view real-time database projections from HANA (Mocked)." class="sapUiSmallMarginBottom"/>
+                        
+                        <Panel headerText="Sales Overview" class="sapUiTinyMarginBottom">
+                            <List id="salesList" items="{salesData>/}">
+                                <items>
+                                    <ObjectListItem
+                                        title="{salesData>orderNumber}"
+                                        number="{salesData>amount}"
+                                        numberUnit="{salesData>currency}"
+                                        intro="{salesData>customerName}" />
+                                </items>
+                            </List>
+                        </Panel>
+
                         <TextArea id="insightInput" width="100%" rows="2" placeholder="e.g. Why are sales low this month? Which region performed best?" />
                         <Button text="Analyze Data" press="onAnalyzePress" type="Emphasized" class="sapUiTinyMarginTop"/>
                         

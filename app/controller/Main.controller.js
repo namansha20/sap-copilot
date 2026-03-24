@@ -5,13 +5,25 @@ sap.ui.define([
 ], function (Controller, MessageToast, JSONModel) {
     "use strict";
 
-    return Controller.extend("sap.copilot.controller.App", {
+    return Controller.extend("sap.copilot.controller.Main", {
         onInit: function () {
             // Set initial role model
             var oModel = new JSONModel({
                 currentRole: "intern"
             });
             this.getView().setModel(oModel, "viewMode");
+
+            // Load Sales Data into Chart Model
+            var oSalesModel = new JSONModel();
+            oSalesModel.loadData("/api/getSalesData");
+            this.getView().setModel(oSalesModel, "salesData");
+
+            // Ensure an initial page is visible without waiting for first nav selection.
+            var oInitialPage = this.byId("processPage");
+            var oNavContainer = this.byId("pageContainer");
+            if (oInitialPage && oNavContainer) {
+                oNavContainer.to(oInitialPage);
+            }
         },
 
         onRoleChange: function (oEvent) {
@@ -21,12 +33,31 @@ sap.ui.define([
         },
 
         onItemSelect: function(oEvent) {
-            var sKey = oEvent.getParameter("item").getKey();
+            var oItem = oEvent.getParameter("item");
+            var sKey = oItem && oItem.getKey ? oItem.getKey() : oEvent.getParameter("key");
+            var mPageKeyMap = {
+                processPage: "processPage",
+                insightsPage: "insightsPage",
+                docsPage: "docsPage",
+                agentPage: "agentPage"
+            };
+            var mItemIdToPageMap = {
+                navProcess: "processPage",
+                navInsights: "insightsPage",
+                navDocs: "docsPage",
+                navAgent: "agentPage"
+            };
+            var sItemId = oItem && oItem.getId ? oItem.getId().split("--").pop() : "";
+            var sTargetPageId = mPageKeyMap[sKey] || mItemIdToPageMap[sItemId] || "processPage";
             var oNavContainer = this.byId("pageContainer");
-            if (oNavContainer.getPage(sKey)) {
-                oNavContainer.to(this.byId(sKey));
-            } else {
-                MessageToast.show("Page not implemented yet.");
+            var oPage = this.byId(sTargetPageId);
+            var oFallbackPage = this.byId("processPage");
+
+            if (oPage && oNavContainer) {
+                oNavContainer.to(oPage);
+            } else if (oFallbackPage && oNavContainer) {
+                oNavContainer.to(oFallbackPage);
+                MessageToast.show("Unable to navigate to the selected page.");
             }
         },
 
