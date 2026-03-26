@@ -1,5 +1,11 @@
 from fastapi import FastAPI
 from app.routes import chat
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
+
+print(os.getenv("APP_NAME"))
 
 app = FastAPI()
 
